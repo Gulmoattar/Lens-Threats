@@ -149,11 +149,10 @@ def get_whois(
         result["error"] = "Could not extract a hostname for WHOIS lookup."
         return result
 
+    previous_timeout = getattr(whois, "timeout", None)
     try:
-        previous_timeout = getattr(whois, "timeout", None)
         whois.timeout = timeout
         record = whois.whois(lookup_target)
-        whois.timeout = previous_timeout
 
         if not record:
             result["error"] = "WHOIS returned no data."
@@ -182,3 +181,5 @@ def get_whois(
     except Exception as exc:
         result["error"] = f"WHOIS lookup failed: {exc}"
         return result
+    finally:
+        whois.timeout = previous_timeout
